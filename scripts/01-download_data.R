@@ -13,7 +13,14 @@ library(tidyverse)
 library(dataverse)
 
 # Load the resource data into a tibble
-raw_data_UK <- get_dataframe_by_name(filename= "ParlEE_UK_plenary_speeches.csv", dataset = "10.7910/DVN/ZY3RV7", server = "dataverse.harvard.edu", .f = read_csv)%>%select(date, agenda, party, policyarea)
+raw_data_UK <- get_dataframe_by_name(
+  filename = "ParlEE_UK_plenary_speeches.csv",
+  dataset = "10.7910/DVN/ZY3RV7",
+  server = "dataverse.harvard.edu",
+  .f = read_csv
+) %>%
+  filter(chair == FALSE) %>%
+  select(date, agenda, party, policyarea)
 
 # Edit date column
 
