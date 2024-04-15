@@ -13,18 +13,14 @@ library(tidyverse)
 library(dataverse)
 
 # Load the resource data into a tibble
-raw_data_UK <- get_dataframe_by_name(
+raw_data_UK_edited <- get_dataframe_by_name(
   filename = "ParlEE_UK_plenary_speeches.csv",
   dataset = "10.7910/DVN/ZY3RV7",
   server = "dataverse.harvard.edu",
   .f = read_csv
 ) %>%
   filter(chair == FALSE) %>%
-  select(date, agenda, party, policyarea)
-
-# Edit date column
-
-raw_data_UK_edited <- mutate(raw_data_UK, date = as.Date(date, format = "%m/%d/%Y"))
+  select(date, agenda, party, policyarea, eu)
 
 # Save data individually by year and save it
 
@@ -61,7 +57,5 @@ write_csv(raw_data_UK_2018, "data/raw_data/raw_data_2018.csv")
 raw_data_UK_2019 <- filter(raw_data_UK_edited, year(date) == 2019)
 write_csv(raw_data_UK_2019, "data/raw_data/raw_data_2019.csv")
 
-#### Save data ####
-#write_csv(raw_data_UK, "data/raw_data/raw_data.csv") 
 
          

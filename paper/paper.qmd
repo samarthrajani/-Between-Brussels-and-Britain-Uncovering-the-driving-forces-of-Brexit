@@ -22,68 +22,138 @@ library(tidyverse)
 library(palmerpenguins)
 ```
 
-
 # Introduction
 
 You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
 
 The remainder of this paper is structured as follows. @sec-data....
 
-
-
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+This paper uses the ParlEE plenary speeches data set to conduct its analysis. This dataset specifically has been obtained from version 1, and uses the UK speech data. The dataset has information on speeches from 2009 to 2019.
+
+For their data collection, the authors chose the government body bearing the most responsibility for legislation. For the United Kingdom they chose the House of Commons. As a starting point, the authors used the The Rauh et al ParlSpeech dataset set since it already contained a large collection of raw speech data for many countries of interest, especially the UK. There was some data missing towards the end of the timeframe of interest (towards 2019), so the authors went through the speeches from (https://hansard.parliament.uk/commons) and filled in the missing parts themselves using an API provided to them.
+
+The authors ironed out typical wrinkles with government related datasets - removing boilerplate information, page numbers, eliminating corrupted social characters and introducing consistent naming conventions for party and speaker alike. This made the data uniform across countries, improving readability.
+
+The dataset has variables explained below :
+
+-   **Date** : The date on which a specific sentence from the speech has been said is recorded in the 'date' variable. This is recorded in the ‘DD/MM/YYYY’ format, with duplicated values for multiple sentences spoken in the same speech as well as if there were multiple speeches on the same day.
+
+-   **Agenda** : The variable ‘agenda’ is the title given to a set of speeches given pertaining to the issue at hand in the House of Commons at the time. This is provided by official sources.
+
+-   **Speechnumber** : The variable ‘speechnumber’ gives a unique identifier to all the sentences spoken in the same speech. So if the first speech in the data set has 5 recorded sentences, they will all be allotted the number 1.
+
+-   **Sentencenumber** : The variable ‘sentencenumber’ assigns a unique identifier to every sentence spoken within the same speech. Continuing the example above, every sentence in speech number 1 is allotted a sentence number 1 through 5. This variable resets from speech to speech, such that the first sentence in every speech will always have number 1.
+
+-   **Speaker** : The variable ‘speaker’ indicates the name of the member making the speech. Measures have been taken to eliminate inconsistencies, such as removing any nicknames, variations in spelling or honorary titles and using only one standard naming convention. The only exception is the usage of ministerial titles in the speaker column, since it is worth indicating when the same speaker is speaking as ‘the Minister’ versus just an individual. This is because that being in that position may lead to influence in the opinion of the speaker as demanded by the given title.
+
+-   **Party** : The ‘party’ variable records the alignment of every speaker. The parties recorded are APNI, Conservative Party, DUP, GPEW, Labour Party, LibDem, other, Plaid Cymru, SDLP, SNP, UKIP and UUP.
+
+-   **Text** : The ‘text’ variable records the raw text of sentences part of a speech given in parliament. This has already been cleaned as stated previously, and therefore is ready to be studied across the other variables like party, agenda, etc.
+
+-   **Parliament**The ‘parliament’ variable stores the name of the legislative body. For the UK and for the purposes of this paper, this variable is ‘UK- HouseofCommons’ everywhere.
+
+-   **iso3country** : Similarly, the variable ‘iso3country’ records the country in question, which for this paper is the United Kingdom throughout, recorded as ‘GBR’.
+
+The authors augmented the collected data so as to make it enable analysis beyond what was already possible. These variables are described below:
+
+-   **EU** : The variable ‘eu’ is a dummy variable introduced by the authors that determines whether the given text or sentence discusses anything related to the European Union. The dummy is ‘1’ if it does discuss the European Union and ‘0’ if it doesn’t.
+
+-   **Policyarea** The variable 'policyarea' assigns a number in accordance with the specific policy topic of a text. The numbers used are from the CAP major categories coding scheme.
+
+The CAP coding scheme is shown in the table below :
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
 #| echo: false
+#| eval: true
+#| message: false
+#| warning: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
+CAP_coding <- data.frame(
+  'Policy Area' = c("Macroeconomics","Civil Rights", "Health", "Agriculture", "Labour", "Education", "Environment","Energy", "Immigration", "Transportation", "Law & Crime", "Social Welfare", "Housing", "Domestic Commerce","Defence", "Technology", "Foreign Trade", "International Affairs", "Government Operations", "Public Lands","Culture", "Fisheries"),
+  'CAP number' = c((1:10),(12:21),23,"New")
+)
+
+```
+
+The following graph shows the occurrence of the given policy types over the years:
+
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+#| warning: false
+
+library(ggplot2)
+library(readr)
+library(dplyr)
+library(scales)
+
+# Read in all the data
+data_2009 <- read_csv("~/Final paper/data/raw_data/raw_data_2009.csv")
+data_2010 <- read_csv("~/Final paper/data/raw_data/raw_data_2010.csv")
+data_2011 <- read_csv("~/Final paper/data/raw_data/raw_data_2011.csv")
+data_2012 <- read_csv("~/Final paper/data/raw_data/raw_data_2012.csv")
+data_2013 <- read_csv("~/Final paper/data/raw_data/raw_data_2013.csv")
+data_2014 <- read_csv("~/Final paper/data/raw_data/raw_data_2014.csv")
+data_2015 <- read_csv("~/Final paper/data/raw_data/raw_data_2015.csv")
+data_2016 <- read_csv("~/Final paper/data/raw_data/raw_data_2016.csv")
+data_2017 <- read_csv("~/Final paper/data/raw_data/raw_data_2017.csv")
+data_2018 <- read_csv("~/Final paper/data/raw_data/raw_data_2018.csv")
+data_2019 <- read_csv("~/Final paper/data/raw_data/raw_data_2019.csv")
+
+# Add column 'year' to every dataset, since we need year when combining them
+
+data_2009 <- mutate(data_2009, year = 2009)
+data_2010 <- mutate(data_2010, year = 2010)
+data_2011 <- mutate(data_2011, year = 2011)
+data_2012 <- mutate(data_2012, year = 2012)
+data_2013 <- mutate(data_2013, year = 2013)
+data_2014 <- mutate(data_2014, year = 2014)
+data_2015 <- mutate(data_2015, year = 2015)
+data_2016 <- mutate(data_2016, year = 2016)
+data_2017 <- mutate(data_2017, year = 2017)
+data_2018 <- mutate(data_2018, year = 2018)
+data_2019 <- mutate(data_2019, year = 2019)
+
+# Combine the data
+
+all_data <- bind_rows(data_2009, data_2010, data_2011, data_2012, data_2013,
+                      data_2014, data_2015, data_2016, data_2017, data_2018, data_2019)
+
+# Create data frame that has counts for policy area in a year
+
+policy_area_counts <- all_data %>%
+  group_by(year, policyarea) %>%
+  summarise(count = n())
+
+# Create grouped barplot with stacked bars
+ggplot(policy_area_counts, aes(x = factor(year), y = count, fill = factor(policyarea))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Frequency of Policy Areas Across Years",
+       x = "Year",
+       y = "Frequency",
+       fill = "Policy Area") +
   theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+  scale_y_continuous(labels = comma)
 ```
 
 Talk more about it.
 
 And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
 
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
-
-analysis_data <- read_csv(here::here("data/analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
-```
-
-Talk way more about it. 
-
-
+Talk way more about it.
 
 # Model
 
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+We use a negative binomial regression model 
 
 ## Model set-up
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.
 
+```{=tex}
 \begin{align} 
 y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 \mu_i &= \alpha + \beta_i + \gamma_i\\
@@ -92,16 +162,14 @@ y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 \gamma &\sim \mbox{Normal}(0, 2.5) \\
 \sigma &\sim \mbox{Exponential}(1)
 \end{align}
-
+```
 We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
 
 ### Model justification
 
 We expect a positive relationship between the size of the wings and time spent aloft. In particular...
 
 We can use maths by including latex between dollar signs, for instance $\theta$.
-
 
 # Results
 
@@ -135,14 +203,11 @@ modelsummary::modelsummary(
 )
 ```
 
-
-
-
 # Discussion
 
 ## First discussion point {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this.
 
 ## Second discussion point
 
@@ -156,8 +221,7 @@ Weaknesses and next steps should also be included.
 
 \appendix
 
-# Appendix {-}
-
+# Appendix {.unnumbered}
 
 # Additional data details
 
@@ -167,28 +231,7 @@ Weaknesses and next steps should also be included.
 
 In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows...
 
 ## Diagnostics
 
@@ -211,11 +254,6 @@ plot(first_model, "trace")
 plot(first_model, "rhat")
 ```
 
-
-
 \newpage
 
-
 # References
-
-
