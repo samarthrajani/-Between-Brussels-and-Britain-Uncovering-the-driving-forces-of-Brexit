@@ -90,64 +90,36 @@ library(readr)
 library(dplyr)
 library(scales)
 
-# Read in all the data
-data_2009 <- read_csv("~/Final paper/data/raw_data/raw_data_2009.csv")
-data_2010 <- read_csv("~/Final paper/data/raw_data/raw_data_2010.csv")
-data_2011 <- read_csv("~/Final paper/data/raw_data/raw_data_2011.csv")
-data_2012 <- read_csv("~/Final paper/data/raw_data/raw_data_2012.csv")
-data_2013 <- read_csv("~/Final paper/data/raw_data/raw_data_2013.csv")
-data_2014 <- read_csv("~/Final paper/data/raw_data/raw_data_2014.csv")
-data_2015 <- read_csv("~/Final paper/data/raw_data/raw_data_2015.csv")
-data_2016 <- read_csv("~/Final paper/data/raw_data/raw_data_2016.csv")
-data_2017 <- read_csv("~/Final paper/data/raw_data/raw_data_2017.csv")
-data_2018 <- read_csv("~/Final paper/data/raw_data/raw_data_2018.csv")
-data_2019 <- read_csv("~/Final paper/data/raw_data/raw_data_2019.csv")
+# Read the CSV file
+all_data <- read_csv("/Users/Samarthsumitrajani/Final paper/data/raw_data/raw_data.csv")
 
-# Add column 'year' to every dataset, since we need year when combining them
-
-data_2009 <- mutate(data_2009, year = 2009)
-data_2010 <- mutate(data_2010, year = 2010)
-data_2011 <- mutate(data_2011, year = 2011)
-data_2012 <- mutate(data_2012, year = 2012)
-data_2013 <- mutate(data_2013, year = 2013)
-data_2014 <- mutate(data_2014, year = 2014)
-data_2015 <- mutate(data_2015, year = 2015)
-data_2016 <- mutate(data_2016, year = 2016)
-data_2017 <- mutate(data_2017, year = 2017)
-data_2018 <- mutate(data_2018, year = 2018)
-data_2019 <- mutate(data_2019, year = 2019)
-
-# Combine the data
-
-all_data <- bind_rows(data_2009, data_2010, data_2011, data_2012, data_2013,
-                      data_2014, data_2015, data_2016, data_2017, data_2018, data_2019)
+# Convert character date column to Date format
+all_data$date <- as.Date(all_data$date, format = "%m/%d/%Y")
 
 # Create data frame that has counts for policy area in a year
-
 policy_area_counts <- all_data %>%
+  mutate(year = format(date, "%Y")) %>%
   group_by(year, policyarea) %>%
   summarise(count = n())
 
+# Filter out NA values from the policy_area_counts dataset
+filtered_data <- policy_area_counts %>%
+  drop_na()
+
 # Create grouped barplot with stacked bars
-ggplot(policy_area_counts, aes(x = factor(year), y = count, fill = factor(policyarea))) +
+ggplot(filtered_data, aes(x = factor(year), y = count, fill = factor(policyarea))) +
   geom_bar(stat = "identity", position = "stack") +
   labs(title = "Frequency of Policy Areas Across Years",
        x = "Year",
        y = "Frequency",
        fill = "Policy Area") +
   theme_minimal() +
-  scale_y_continuous(labels = comma)
+  scale_y_continuous(labels = scales::comma)
 ```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-Talk way more about it.
 
 # Model
 
-We use a negative binomial regression model 
+We use a linear logistic regression model in order to estimate how each individual party
 
 ## Model set-up
 
