@@ -2,8 +2,7 @@
 title: "My title"
 subtitle: "My subtitle if needed"
 author: 
-  - First author
-  - Another author
+  - Samarth Rajani
 thanks: "Code and data are available at: LINK."
 date: today
 date-format: long
@@ -24,7 +23,18 @@ library(palmerpenguins)
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
+In the global landscape, where each nation sets to maximize its own gain and self interest, the European Union holds a special place. The only political and economic union of its kind, it spans 27 nations in Europe, 
+
+However, there is an inherent concern with being party of a larger authority - there is a risk of a misalignment of potential goals. With 26 other states involved, policy across the union becomes a balancing act between furthering an individual nation’s goals without compromising another. This unique situation burdens legislative bodies of the nations involved to consistently discuss and negotiate EU-related matters, potentially diverting money, time and manpower away from domestic issues, all of which are important resources. Therefore, the legislative bodies must balance engaging in EU related discourse and tending to the needs of the local public.
+
+The United Kingdom was an influential part of the European Union. Even though the United Kingdom joined the union later than other European giants like France and Germany (15 years later), it spearheaded efforts in making the union one. Most notably, the UK presented a plan that included 282 legislative actions at the European Council in Milan in June 1985, which was the foundation of the single market within the EU. This enabled complete free movement of goods and services within the EU, and without the involvement of the UK the Union may have taken a more protectionist approach(https://www.politico.eu/article/britain-leaves-mark-eu-brexit/). With its economic prowess, UK also commanded areas of foreign policy, free trade and growth among others.
+
+However, the UK’s allegiance to the union did not stand the test of time, succumbing to the dilemma described before. The driving force behind the ‘Brexit’ in 2020 has been a concern for lack of sovereignty, where the public felt the European Commission was taking away the UK’s ability to make decisions for itself. David Frost’s speech in 2020 best highlighted this position (https://no10media.blog.gov.uk/2020/02/17/david-frost-lecture-reflections-on-the-revolutions-in-europe/) and detailed how the European Union’s institutions felt  abstract and “disconnected from natural feeling’. After much deliberation since 2016, the UK pulled the trigger in 2020, successfully exiting the Union in dramatic fashion.
+
+Keeping this in mind, it is worth examining how often matter of the European Union dictated discourse in the United Kingdom. Specifically, this paper studies how often each party gave speeches that involved discussions around the European Union right down to the level of individual sentences. Looking at the ParlEE(https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ZY3RV7) dataset, this paper examines how likely is one political party to devote time to discussing EU related matters as compared to domestic ones.
+
+[Paragraph on results]
+
 
 The remainder of this paper is structured as follows. @sec-data....
 
@@ -119,7 +129,7 @@ ggplot(filtered_data, aes(x = factor(year), y = count, fill = factor(policyarea)
 
 # Model
 
-We use a linear logistic regression model in order to estimate how each individual party
+We use a linear logistic regression model in order to estimate how likely each individual party is to talk about European Union related affairs. Using the 'eu' binary values, the regression is run using the Alliance Party of Northern Ireland (APNI) as the predictor category
 
 ## Model set-up
 
@@ -155,8 +165,8 @@ Our results are summarized in @tbl-modelresults.
 
 library(rstanarm)
 
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
+#first_model <-
+  #readRDS(file = here::here("models/first_model.rds"))
 ```
 
 ```{r}
@@ -166,13 +176,13 @@ first_model <-
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
+#modelsummary::modelsummary(
+  #list(
+#    "First model" = first_model
+ # ),
+  #statistic = "mad",
+  #fmt = 2
+#)
 ```
 
 # Discussion
