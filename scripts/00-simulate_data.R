@@ -12,8 +12,9 @@ library(tidyverse)
 years <- rep(seq(2009, 2019, by = 1), each = 10)
 agenda_type <- sample(c("Education","Environment","Agriculture","Immigration","Crime"),replace = TRUE, size = 110)
 party <- sample(c("APNI", "Conservative Party","Labour Party", "LibDem","Other","UUP"), replace = TRUE, size = 110)
+EU <- rbinom(110,size = 1, prob = 0.3)
 
-Simulated_data <- data.frame(Year = years, Agenda = agenda_type, Party = party)
+Simulated_data <- data.frame(Year = years, Agenda = agenda_type, Party = party, EU = EU)
 Simulated_data
 
 ### Saving simulated data ###
