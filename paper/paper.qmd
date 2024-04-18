@@ -1,5 +1,5 @@
 ---
-title: "Between Brussels and Britain: Understanding Party Engagement with EU and Domestic Topics in the UK Parliament"
+title: "Between Brussels and Britain: Uncovering the driving forces of Brexit"
 subtitle: "A statistical approach to assessing engagement in a supranational union"
 author: 
   - Samarth Rajani
@@ -45,6 +45,8 @@ This paper uses the ParlEE plenary speeches data set to conduct its analysis. Th
 For their data collection, the authors chose the government body bearing the most responsibility for legislation. For the United Kingdom they chose the House of Commons. As a starting point, the authors used the The Rauh et al ParlSpeech dataset set since it already contained a large collection of raw speech data for many countries of interest, especially the UK. There was some data missing towards the end of the timeframe of interest (towards 2019), so the authors went through the speeches from @API and filled in the missing parts themselves using an API provided to them.
 
 The authors ironed out typical wrinkles with government related datasets - removing boilerplate information, page numbers, eliminating corrupted social characters and introducing consistent naming conventions for party and speaker alike. This made the data uniform across countries, improving readability.
+
+## Variables
 
 The dataset has variables explained below :
 
@@ -137,23 +139,23 @@ ggplot(filtered_data, aes(x = factor(year), y = count, fill = factor(policyarea)
   scale_y_continuous(labels = scales::comma)
 ```
 
+As can be seen, there is very little variation in discussion of specific policy areas over the course of 10 years. This could be due to the dataset being extremely large, as it would iron out any major differences due to sheer sample size. There is also a case to be made that the CAP classifier used by the authors to assign the policy area to sentences may not be completely accurate, although that discussion is not relevant to this paper.
+
 # Model
 
 We use a linear logistic regression model in order to estimate how likely each individual party is to talk about European Union related affairs. Using the 'eu' binary values, the regression is run using the Alliance Party of Northern Ireland (APNI) as the predictor category. We will also be using Bayesian Estimation in our model, using the @rstanarm package.
 
 ## Model set-up
 
-Define $y_i$ as discussion of EU in that sentence. Then $\beta_i$ is the party affiliation.
+Define $y_i$ as discussion of the EU in a specific sentence of a speech. Then $x_i$ is the party affiliation.
 
 ```{=tex}
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+\begin{align*} 
+y_i|\pi_i &\sim \text{Bernoulli}(\pi_i) \\
+\text{logit}(\pi_i) &= \beta_0 + \beta_1 x_i + \gamma_i\\
+\beta_0 &\sim \text{Normal}(0, 2.5) \\
+\beta_1 &\sim \text{Normal}(0, 2.5) 
+\end{align*}
 ```
 We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
 
@@ -177,24 +179,18 @@ Our results are summarized in @tbl-modelresults.
 
 library(rstanarm)
 
-#first_model <-
-  #readRDS(file = here::here("models/first_model.rds"))
+first_model <-
+  readRDS(file = here::here("models/first_model.rds"))
 ```
 
 ```{r}
 #| echo: false
 #| eval: true
 #| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| tbl-cap: "Logistic model of likelihood of a party affiliation speaking about the EU"
 #| warning: false
 
-#modelsummary::modelsummary(
-  #list(
-#    "First model" = first_model
- # ),
-  #statistic = "mad",
-  #fmt = 2
-#)
+summary(first_model)
 ```
 
 # Discussion
@@ -209,17 +205,23 @@ If my paper were 10 pages, then should be be at least 2.5 pages. The discussion 
 
 ### Small timeframe
 
-The one obvious limitation of this paper is that it only uses data from 2014 to 2016 in its analysis to judge which parties are being vocal. This was done due to resource limitations in the logistic analysis - the runtime for merely 2 years was close to 5 hours, severely limiting the ability to measure the relationship between party affiliation and talking about the EU in the House of Commons. Since the Brexit referendum took place in 2016, it is possible that the propensity to talk about the EU was in fact talking just about the referendum, and therefore might not be the vocalisation of disagreement. This causes our estimates to overestimate the the friction between the political parties and European Parliament, making our conclusions inaccurate.
+The one obvious limitation of this paper is that it only uses data from 2014 to 2016 in its analysis to judge which parties are being vocal. This was done due to resource limitations in the logistic analysis - the runtime for merely 2 years was close to 5 hours, severely limiting the ability to measure the relationship between party affiliation and talking about the EU in the House of Commons. Since the Brexit referendum took place in 2016, it is possible that the propensity to talk about the EU was in fact talking just about the referendum, and therefore might not be the vocalisation of disagreement. This causes our estimates to overestimate the the friction between the political parties and European Parliament, making our conclusions inaccurate. This is a fundamental reverse causality problem.
 
 ### Construction of the 'eu' column
 
-It is worth noting that the 'eu' column was not obtained from any existing dataset from the UK House of Commons. Instead, the authors utilised a classifier that had been trained on existing  EU topical coded speech data from the Comparative Agendas Project (CAP) (Baumgartner et al. 2019).
+It is worth noting that the 'eu' column was not obtained from any existing dataset from the UK House of Commons. Instead, the authors utilised a classifier that had been trained on existing EU topical coded speech data from the Comparative Agendas Project (CAP) (Baumgartner et al. 2019).
 
-In the release note, the authors discuss how a binary classification of EU related issues may have been too strict, and thereby generated more false negatives (classifier incorrectly classifies a sentence discussing EU Governance as not discussing EU governance) in the pursuit of less false positives (classifier incorrectly classifies a sentence as discussing EU Governance when it does not). This causes a potentially downward bias in our logistic regression estimates, underestimating the extent to which EU related matters have dictated discourse
+In the release note, the authors discuss how a binary classification of EU related issues may have been too strict, and thereby generated more false negatives (classifier incorrectly classifies a sentence discussing EU Governance as not discussing EU governance) in the pursuit of less false positives (classifier incorrectly classifies a sentence as discussing EU Governance when it does not). This causes a potentially downward bias in our logistic regression estimates, underestimating the extent to which EU related matters have dictated discourse.
 
-## Next steps
+## Next steps - An Instrumental Variable Framework
 
-Possibly construct a
+This paper lays the groundwork for a more detailed study into which parties played the strongest role in Brexit. With the dataset of speeches already avaiable, devising an Intrumental Variable Framework to determine party influence seems like a suitable way forward.
+
+As previously discussed, since speech occurence may not be a robust proxy for disagreement, employing an Instrumental Variable strategy will get rid of the reverse causality concerns.
+
+### Instrumental Variable
+
+When studying the relationship between two variables, there is a concern of reverse causality. For example, if we were to study the impact on institutions on the GDP of a nation, 
 
 \newpage
 

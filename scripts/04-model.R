@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: Downloads and saves the data from the ParlEE dataset
+# Purpose: Models the dataset between party affiliation and discussion on the European Union
 # Author: Samarth Rajani
 # Date: 16 April 2024
 # Contact: samarth.rajani@utoronto.ca 

@@ -10,6 +10,7 @@
 #### Workspace setup ####
 library(tidyverse)
 library(dataverse)
+library(arrow)
 
 # Load the resource data into a tibble
 raw_data_UK_edited <- get_dataframe_by_name(
@@ -24,5 +25,5 @@ raw_data_UK_edited <- get_dataframe_by_name(
 # Save data (locally since it is too big to be pushed)
 
 write_csv(raw_data_UK_edited, "/Users/Samarthsumitrajani/Final paper/data/raw_data/raw_data.csv")
-
-         
+write_parquet(raw_data_UK_edited, sink ="/Users/Samarthsumitrajani/Final paper/data/raw_data/raw_data.parquet")
+# Running into parquet errors
