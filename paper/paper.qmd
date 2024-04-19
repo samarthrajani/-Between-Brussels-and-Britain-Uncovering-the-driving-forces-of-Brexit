@@ -18,8 +18,8 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
 library(knitr)
+library(modelsummary)
 ```
 
 # Introduction
@@ -45,6 +45,8 @@ This paper uses the ParlEE plenary speeches data set to conduct its analysis. Th
 For their data collection, the authors chose the government body bearing the most responsibility for legislation. For the United Kingdom they chose the House of Commons. As a starting point, the authors used the The Rauh et al ParlSpeech dataset set since it already contained a large collection of raw speech data for many countries of interest, especially the UK. There was some data missing towards the end of the timeframe of interest (towards 2019), so the authors went through the speeches from @API and filled in the missing parts themselves using an API provided to them.
 
 The authors ironed out typical wrinkles with government related datasets - removing boilerplate information, page numbers, eliminating corrupted social characters and introducing consistent naming conventions for party and speaker alike. This made the data uniform across countries, improving readability.
+
+The entire paper uses R [@citeR]. The **tidyverse** package is used for data manipulation [@citetidyverse] and kableExtra for table formatting [@citekableExtra]
 
 ## Variables
 
@@ -190,20 +192,10 @@ first_model <-
 #| tbl-cap: "Logistic model of likelihood of a party affiliation speaking about the EU"
 #| warning: false
 
-#summary_result <- summary(first_model)
-
-coefficients <- coef(first_model)
-# Extract variable names (excluding intercept)
-variables <- names(coefficients)[-1]  # Exclude the intercept
-
-# Extract coefficients (excluding intercept)
-coefficients <- coefficients[-1]  # Exclude the intercept
-
-# Create data frame
-coefs_df <- data.frame(Party = variables, Coefficients = coefficients)
-
-# Print the data frame
-print(coefs_df)
+modelsummary(
+  list(
+    "Log likelihood of EU discussion" = first_model)
+)
 ```
 
 The summary table provides the coefficients for our regression.
@@ -214,16 +206,15 @@ Our model seems to be a good predictor for support for Brexit. The UK Independen
 
 Furthermore, the Liberal Democrat party (LibDem) have been against Brexit, beieving that being a part of the European Union is in the best interests of the UK government. This can be seen as a coefficient of 0.8 log odds is one of the lowest in the summary table. 
 
-It is worth stating that the reference ctaegory variable here is Alliance Party of Northern Ireland (APNI), which has holds an anti-Brexit stance.
-
+It is worth stating that the reference category variable here is Alliance Party of Northern Ireland (APNI), which has holds an anti-Brexit stance.
 
 # Discussion {#sec-discussion}
 
-## First discussion point 
+## Disagreement and discourse - a relationship 
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this.
+While this paper studies a very specific question, the strategy used to model has implications that may be more far reaching than one would anticipate at face value. The strategy is simple - the more strong the disagreement, the more it is voiced in an environment conducive to that sort of discussion. This means it could have implications not only for the EU, but for studies that have nothing to do with socioeconomic outcomes.
 
-## Second discussion point
+For example, there exist many small institutions that are not usually at the center of statistical models, like a high school council. However, if there is a key issue up for discussion, it seems safe conjecture that students who disagree with actions of the school are more likely to voice their concerns, even repeatedly. This easy-to-miss behavioural strategy can be extrapolated to other important areas to enable or bolster a study.
 
 ## Limitations
 
@@ -239,16 +230,12 @@ In the release note, the authors discuss how a binary classification of EU relat
 
 ## Next steps - An Instrumental Variable Framework
 
-This paper lays the groundwork for a more detailed study into which parties played the strongest role in Brexit. With the dataset of speeches already avaiable, devising an Intrumental Variable Framework to determine party influence seems like a suitable way forward.
+This paper lays the groundwork for a more detailed study into which parties played the strongest role in Brexit. With the dataset of speeches already available, devising an Intrumental Variable Framework to determine party influence seems like a suitable way forward.
 
-As previously discussed, since speech occurence may not be a robust proxy for disagreement, employing an Instrumental Variable strategy will get rid of the reverse causality concerns.
+When studying the relationship between two variables, there is a concern of reverse causality. For example, if we were to study the impact on institutions on the GDP of a nation, our estimates would be biased since GDP could also affect and improve an institution. To tackle this, an Instrumental Variable approach can be used.
 
-### Instrumental Variable
-
-When studying the relationship between two variables, there is a concern of reverse causality. For example, if we were to study the impact on institutions on the GDP of a nation, our estimates would be biased since GDP could also affect and improve an institituion. To tackle this, an Instrumental Variable approach can be used.
-
-For this to happen, 
+In this setting, to help predict influence on brexit, we can use frequency of EU in speeches as the instrument. While this will require further testing and OLS regression to prove that frequency of EU speeches are correlated with supporting Brexit, as well as discussions about the Exclusion Restriction. However, those are beyond the scope of this course.
 
 \newpage
-
+# Appendix - Shiny application
 # References
