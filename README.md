@@ -19,6 +19,7 @@ The repo is structured as:
 -   `other` contains relevant literature, details about LLM chat interactions, and sketches.
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
 -   `scripts` contains the R scripts used to simulate, download and clean data.
+-   `Enhancement` includes a shiny app used to enhance the paper
 
 
 ## Statement on LLM usage
