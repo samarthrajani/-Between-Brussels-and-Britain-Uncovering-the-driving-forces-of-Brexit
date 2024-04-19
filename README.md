@@ -5,7 +5,7 @@
 This repo provides the data, scripts, and all other information for the paper "Between Brussels and Britain: Uncovering the driving forces of Brexit".
 Some notes : 
 
-- The raw data file was too large to push to github, so was saved locally instead. The donwload data script contains a fully reporducible method of donwloading the data, it was only saved locally
+- The raw data file was too large to push to github, so was saved locally instead. The donwload data script contains a fully reproducible method of donwloading the data, it was only saved locally
 - Due to extensive load times, the data was downloaded and cleaned simulatneously in the same script titled '01-download_data.R'
 - Even after cleaning, the dataset was too large to push to github, and making it smaller would negatively affect the model. Therefore, it had to be read from a local source.
 - I made an attempt to save the dataset as a parquet file, but the new error due to the update made it impossible
